@@ -24,10 +24,10 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _appProvider = AppProvider();
-    // Use addPostFrameCallback to ensure the provider is inserted into the tree (if needed)
-    // or just to break execution flow. However, we are passing it to ChangeNotifierProvider.
-    // Calling loadInitialData here is safe because no one is listening yet.
-    _appProvider.loadInitialData();
+    // Use addPostFrameCallback to ensure the provider notifies listeners only after the build frame is complete.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _appProvider.loadInitialData();
+    });
   }
 
   @override

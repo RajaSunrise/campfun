@@ -17,7 +17,8 @@ class StorageService {
       final directory = await getApplicationDocumentsDirectory();
       return File('${directory.path}/$_fileName');
     } catch (e) {
-      print("Warning: Failed to get application documents directory: $e");
+      // Catch everything, including MissingPluginException
+      print("StorageService: Native file system unavailable ($e). Using in-memory storage.");
       return null;
     }
   }
@@ -86,8 +87,13 @@ class StorageService {
     };
 
     if (file != null) {
-      if (!await file.exists()) {
-        await file.writeAsString(jsonEncode(initialData));
+       try {
+        if (!await file.exists()) {
+          await file.writeAsString(jsonEncode(initialData));
+        }
+      } catch (e) {
+         // Fallback if file write fails despite file object existing
+         _memoryCache ??= initialData;
       }
     } else {
        // Initialize in-memory cache if file system unavailable
@@ -99,11 +105,17 @@ class StorageService {
     final file = await _getFile();
     await _initFile(file);
 
-    if (file != null && await file.exists()) {
+    if (file != null) {
        try {
-        final content = await file.readAsString();
-        return jsonDecode(content);
+        if (await file.exists()) {
+          final content = await file.readAsString();
+          return jsonDecode(content);
+        } else {
+           // Should be handled by _initFile but just in case
+           return _memoryCache ?? {};
+        }
        } catch (e) {
+         print("StorageService: Error reading file ($e). Using in-memory storage.");
          return _memoryCache!;
        }
     } else {
@@ -112,42 +124,47 @@ class StorageService {
   }
 
   Future<void> _writeData(Map<String, dynamic> data) async {
+    // Update memory cache immediately
+    _memoryCache = data;
+
     final file = await _getFile();
     if (file != null) {
-       await file.writeAsString(jsonEncode(data));
+       try {
+         await file.writeAsString(jsonEncode(data));
+       } catch (e) {
+         print("StorageService: Error writing file ($e). Data only in memory.");
+       }
     }
-    // Always update memory cache just in case
-    _memoryCache = data;
   }
 
   // User CRUD
   Future<List<User>> getUsers() async {
     final data = await _readData();
-    final usersList = data['users'] as List;
+    final usersList = (data['users'] as List?) ?? [];
     return usersList.map((e) => User.fromJson(e)).toList();
   }
 
   Future<void> addUser(User user) async {
     final data = await _readData();
-    final usersList = data['users'] as List;
+    final usersList = (data['users'] as List?) ?? [];
     usersList.add(user.toJson());
     data['users'] = usersList;
     await _writeData(data);
   }
 
-  // Equipment Read (Update/Delete if admin functionality needed, for now just Read)
+  // Equipment Read
   Future<List<Equipment>> getEquipment() async {
     final data = await _readData();
-    final list = data['equipment'] as List;
+    final list = (data['equipment'] as List?) ?? [];
     return list.map((e) => Equipment.fromJson(e)).toList();
   }
 
   // Cart CRUD
   Future<List<CartItem>> getCart(String userId) async {
     final data = await _readData();
-    final carts = data['carts'] as Map<String, dynamic>;
+    final carts = (data['carts'] as Map<String, dynamic>?) ?? {};
     if (carts.containsKey(userId)) {
-      final list = carts[userId] as List;
+      final list = (carts[userId] as List?) ?? [];
       return list.map((e) => CartItem.fromJson(e)).toList();
     }
     return [];
@@ -155,7 +172,7 @@ class StorageService {
 
   Future<void> addToCart(String userId, CartItem item) async {
     final data = await _readData();
-    final carts = data['carts'] as Map<String, dynamic>;
+    final carts = (data['carts'] as Map<String, dynamic>?) ?? {};
     List<dynamic> userCart = carts[userId] != null ? (carts[userId] as List) : [];
 
     // Check if item already exists
@@ -182,7 +199,7 @@ class StorageService {
 
   Future<void> updateCartItem(String userId, String cartItemId, int newQuantity) async {
      final data = await _readData();
-    final carts = data['carts'] as Map<String, dynamic>;
+    final carts = (data['carts'] as Map<String, dynamic>?) ?? {};
     if (carts.containsKey(userId)) {
       List<dynamic> userCart = carts[userId] as List;
       int index = userCart.indexWhere((e) => e['id'] == cartItemId);
@@ -203,7 +220,7 @@ class StorageService {
 
   Future<void> removeCartItem(String userId, String cartItemId) async {
     final data = await _readData();
-    final carts = data['carts'] as Map<String, dynamic>;
+    final carts = (data['carts'] as Map<String, dynamic>?) ?? {};
     if (carts.containsKey(userId)) {
       List<dynamic> userCart = carts[userId] as List;
       userCart.removeWhere((e) => e['id'] == cartItemId);
