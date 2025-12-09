@@ -15,70 +15,73 @@ class WelcomeScreen extends StatelessWidget {
           child: Column(
             children: [
               Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      height: 64,
-                      width: 64,
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: const Icon(Icons.terrain, size: 36, color: AppColors.backgroundDark),
-                    ),
-                    const SizedBox(height: 32),
-                    const Text(
-                      'CampFun',
-                      style: TextStyle(
-                        fontSize: 36,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.textLight,
-                        fontFamily: 'Plus Jakarta Sans',
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                    Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Container(
-                          width: 200,
-                          height: 200,
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.2),
-                            shape: BoxShape.circle,
-                          ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        height: 64,
+                        width: 64,
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                        const Icon(Icons.kitesurfing, size: 144, color: AppColors.textLight),
-                      ],
-                    ),
-                    const SizedBox(height: 32),
-                    const Text(
-                      'Selamat Datang di Puncak!',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textLight,
-                        height: 1.2,
-                         fontFamily: 'Plus Jakarta Sans',
+                        child: const Icon(Icons.terrain, size: 36, color: AppColors.backgroundDark),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Sewa peralatan mendaki, jelajahi puncak impianmu.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColors.textLight,
-                         fontFamily: 'Plus Jakarta Sans',
+                      const SizedBox(height: 32),
+                      const Text(
+                        'CampFun',
+                        style: TextStyle(
+                          fontSize: 36,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.textLight,
+                          fontFamily: 'Plus Jakarta Sans',
+                        ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 32),
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Container(
+                            width: 200,
+                            height: 200,
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withOpacity(0.2),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const Icon(Icons.kitesurfing, size: 144, color: AppColors.textLight),
+                        ],
+                      ),
+                      const SizedBox(height: 32),
+                      const Text(
+                        'Selamat Datang di Puncak!',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textLight,
+                          height: 1.2,
+                           fontFamily: 'Plus Jakarta Sans',
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Sewa peralatan mendaki, jelajahi puncak impianmu.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: AppColors.textLight,
+                           fontFamily: 'Plus Jakarta Sans',
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               Column(
                 children: [
+                  const SizedBox(height: 16),
                   SizedBox(
                     width: double.infinity,
                     height: 48,
