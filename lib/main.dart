@@ -17,33 +17,23 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AppProvider()),
+        ChangeNotifierProvider(
+          create: (_) => AppProvider()..loadInitialData(),
+        ),
       ],
-      child: Consumer<AppProvider>(
-        builder: (context, appProvider, child) {
-          return MaterialApp(
-            title: 'CampFun',
-            debugShowCheckedModeBanner: false,
-            theme: ThemeData(
-              primaryColor: AppColors.primary,
-              scaffoldBackgroundColor: AppColors.backgroundLight,
-              textTheme: GoogleFonts.plusJakartaSansTextTheme(
-                Theme.of(context).textTheme,
-              ),
-              colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
-              useMaterial3: true,
-            ),
-            home: FutureBuilder(
-              future: appProvider.loadInitialData(), // Load initial equipment
-              builder: (context, snapshot) {
-                 if (snapshot.connectionState == ConnectionState.waiting) {
-                   return const Scaffold(body: Center(child: CircularProgressIndicator()));
-                 }
-                 return const WelcomeScreen();
-              },
-            ),
-          );
-        },
+      child: MaterialApp(
+        title: 'CampFun',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primaryColor: AppColors.primary,
+          scaffoldBackgroundColor: AppColors.backgroundLight,
+          textTheme: GoogleFonts.plusJakartaSansTextTheme(
+            Theme.of(context).textTheme,
+          ),
+          colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
+          useMaterial3: true,
+        ),
+        home: const WelcomeScreen(),
       ),
     );
   }
