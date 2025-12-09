@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../constants.dart';
 import '../models/equipment.dart';
 import '../providers/app_provider.dart';
+import 'auth/login_screen.dart';
 
 class DetailScreen extends StatefulWidget {
   final Equipment equipment;
@@ -263,7 +264,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     return;
                   }
 
-                  await context.read<AppProvider>().addToCart(
+                  final success = await context.read<AppProvider>().addToCart(
                     widget.equipment,
                     _quantity,
                     _selectedDateRange!.start,
@@ -271,8 +272,13 @@ class _DetailScreenState extends State<DetailScreen> {
                   );
 
                   if (mounted) {
-                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Berhasil ditambahkan ke keranjang")));
-                     Navigator.pop(context);
+                     if (success) {
+                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Berhasil ditambahkan ke keranjang")));
+                       Navigator.pop(context);
+                     } else {
+                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Silakan login terlebih dahulu")));
+                       Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+                     }
                   }
                 },
                 style: ElevatedButton.styleFrom(

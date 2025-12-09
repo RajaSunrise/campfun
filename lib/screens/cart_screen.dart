@@ -98,8 +98,13 @@ class CartScreen extends StatelessWidget {
                                       ),
                                     ),
                                     GestureDetector(
-                                      onTap: () {
-                                        provider.removeCartItem(item.id);
+                                      onTap: () async {
+                                        await provider.removeCartItem(item.id);
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(content: Text("Item dihapus dari keranjang"))
+                                          );
+                                        }
                                       },
                                       child: const Icon(Icons.delete_outline, color: Colors.red),
                                     ),

@@ -81,8 +81,8 @@ class AppProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addToCart(Equipment equipment, int quantity, DateTime startDate, DateTime endDate) async {
-    if (_currentUser == null) return;
+  Future<bool> addToCart(Equipment equipment, int quantity, DateTime startDate, DateTime endDate) async {
+    if (_currentUser == null) return false;
     _setLoading(true);
     try {
       final item = CartItem(
@@ -94,6 +94,7 @@ class AppProvider with ChangeNotifier {
       );
       await _storageService.addToCart(_currentUser!.id, item);
       await _refreshCart();
+      return true;
     } finally {
       _setLoading(false);
     }

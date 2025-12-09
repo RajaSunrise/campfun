@@ -19,16 +19,19 @@ class _HomeScreenState extends State<HomeScreen> {
   String _searchQuery = "";
   String _selectedCategory = "Semua";
 
+  final FocusNode _searchFocusNode = FocusNode();
+
   final List<String> _categories = ["Semua", "Tenda", "Tas Carrier", "Alat Masak", "Lainnya"];
 
   void _onItemTapped(int index) {
-    if (index == 0) {
-       setState(() {
-        _selectedIndex = 0;
-      });
-    } else if (index == 2) {
+     if (index == 0) {
+       // Home
+     } else if (index == 1) {
+       // Telusuri - Focus search
+       _searchFocusNode.requestFocus();
+     } else if (index == 2) {
        Navigator.push(context, MaterialPageRoute(builder: (context) => const CartScreen()));
-    } else if (index == 3) {
+     } else if (index == 3) {
       Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
     }
   }
@@ -85,6 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: TextField(
+              focusNode: _searchFocusNode,
               onChanged: (value) {
                 setState(() {
                   _searchQuery = value;
@@ -139,7 +143,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           // Grid
           Expanded(
-            child: GridView.builder(
+            child: filteredEquipment.isEmpty
+            ? const Center(child: Text("Tidak ada peralatan ditemukan", style: TextStyle(fontFamily: 'Plus Jakarta Sans'),))
+            : GridView.builder(
               padding: const EdgeInsets.all(16.0),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
@@ -210,21 +216,16 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
+        currentIndex: _selectedIndex, // Use state variable
         selectedItemColor: AppColors.textLight,
         unselectedItemColor: Colors.grey,
         showUnselectedLabels: true,
         type: BottomNavigationBarType.fixed,
         onTap: (index) {
-          if (index == 0) {
-            // Stay
-          } else if (index == 1) {
-             // Search tab, stay here essentially as home is search
-          } else if (index == 2) {
-             Navigator.push(context, MaterialPageRoute(builder: (context) => const CartScreen()));
-          } else if (index == 3) {
-             Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
-          }
+          setState(() {
+             _selectedIndex = index;
+          });
+          _onItemTapped(index);
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
